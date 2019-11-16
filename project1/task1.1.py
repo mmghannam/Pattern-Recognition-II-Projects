@@ -1,4 +1,4 @@
-from numpy import load, transpose
+from numpy import load, transpose, mean
 from numpy.linalg import eig, eigh, svd, norm
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -36,8 +36,8 @@ if __name__ == '__main__':
     # show first 10 images
     # for i in range(10): show_image(i, X)
 
-    # normalize X as to make column mean 0
-    X = MinMaxScaler(feature_range=(-0.5, 0.5)).fit(X).transform(X)
+    # make column mean = 0
+    X = X - mean(X, axis=0)
 
     C = X.dot(transpose(X))
 
