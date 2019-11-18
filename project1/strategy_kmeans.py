@@ -18,5 +18,4 @@ def strategy_kmeans(data, k=3, seed=1):
                 avg_largest_distance = avg_largest_distance
                 solutions[i] = item
 
-    print(solutions)
     return solutions
