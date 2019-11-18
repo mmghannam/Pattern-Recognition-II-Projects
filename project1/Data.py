@@ -1,22 +1,29 @@
 import numpy as np
-from scipy.spatial import ConvexHull
+import math
 import matplotlib.pyplot as plt
-k = 50
-points = np.random.rand(k, 2)   # 30 random points in 2-D
 
-hull = ConvexHull(points,incremental = True)
-v = hull.vertices
-print(len(v))
-while( len(v)!= k):
-    rand_point=np.random.rand(1, 2)
-    points= np.append(points,rand_point,axis=0)
-    np.savetxt('data2.out', points, delimiter=',')
-    hull.add_points(rand_point,restart=True)
-    v=hull.vertices
-    print(len(v))
-
-plt.plot(points[:,0], points[:,1], 'o')
-for simplex in hull.simplices:
-    plt.plot(points[simplex, 0], points[simplex, 1], 'k-')
-
-plt.show()
+def Data(k,dim,n):
+    if os.path.exists("data" + str(25) + ".npy"):
+        data = np.load("data" + str(25) + ".npy")
+        return data
+    data = []
+    radius = np.random.randint(10,100)
+    rad = np.full(k,radius)
+    rad = np.square(rad)
+    sum = np.zeros(k)
+    count= k
+    for i in range(dim-1):
+        data.append(np.random.rand(k))
+        sum+=np.square(data[i])
+    last_col = rad-sum
+    last_col = np.sqrt(np.abs(last_col))
+    data.append(last_col)
+    while(count!=n):
+        point = np.random.rand(k)
+        radius_of_point = np.sum(np.square(point))
+        if(math.sqrt(radius_of_point)<radius):
+            data.append(point)
+            count+=1
+    data_write = np.array(data).T
+    np.save("data" + str(k)+".out", data_write)
+    return data_write
