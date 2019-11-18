@@ -5,7 +5,7 @@ import os.path
 
 def Data(k,dim,n):
     if os.path.exists("data" + str(k)+"_"+str(dim)+"_"+str(n)+ ".npy"):
-        data = np.load("data" + "_"+str(dim)+"_"+str(n) + ".npy")
+        data = np.load("data" + str(k)+"_"+str(dim)+"_"+str(n) + ".npy")
         ground_truth = data[0:k]
         np.random.shuffle(data)
         return ground_truth,data
