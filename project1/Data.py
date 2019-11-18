@@ -8,6 +8,7 @@ def Data(k,dim,n):
         data = np.load("data" + str(k) + ".npy")
         return data
     data = []
+    data_write = np.zeros((n,dim))
     radius = np.random.randint(10,100)
     rad = np.full(k,radius)
     rad = np.square(rad)
@@ -19,12 +20,14 @@ def Data(k,dim,n):
     last_col = rad-sum
     last_col = np.sqrt(np.abs(last_col))
     data.append(last_col)
+    data = np.array(data).T
+    for i in range(k):
+        data_write[i] = data[i]
     while(count!=n):
-        point = np.random.rand(k)
+        point = np.random.rand(dim)
         radius_of_point = np.sum(np.square(point))
         if(math.sqrt(radius_of_point)<radius):
-            data.append(point)
+            data_write[count] = point
             count+=1
-    data_write = np.array(data).T
     np.save("data" + str(k)+".out", data_write)
     return data_write
