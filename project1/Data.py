@@ -3,8 +3,11 @@ import math
 import matplotlib.pyplot as plt
 
 def Data(k,dim,n):
+    if os.path.exists("data" + str(25) + ".npy"):
+        data = np.load("data" + str(25) + ".npy")
+        return data
     data = []
-    radius = np.random.rand()
+    radius = np.random.randint(10,100)
     rad = np.full(k,radius)
     rad = np.square(rad)
     sum = np.zeros(k)
@@ -23,3 +26,4 @@ def Data(k,dim,n):
             count+=1
     data_write = np.array(data).T
     np.save("data" + str(k)+".out", data_write)
+    return data_write
