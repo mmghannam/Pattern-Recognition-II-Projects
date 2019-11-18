@@ -1,10 +1,11 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import os.path
 
 def Data(k,dim,n):
-    if os.path.exists("data" + str(25) + ".npy"):
-        data = np.load("data" + str(25) + ".npy")
+    if os.path.exists("data" + str(k) + ".npy"):
+        data = np.load("data" + str(k) + ".npy")
         return data
     data = []
     radius = np.random.randint(10,100)
