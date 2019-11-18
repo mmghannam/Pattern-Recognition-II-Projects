@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import os.path
 
 def Data(k,dim,n):
-    if os.path.exists("data" + str(k) + ".npy"):
-        data = np.load("data" + str(k) + ".npy")
+    if os.path.exists("data" + str(k)+"_"+str(dim)+"_"+str(n)+ ".npy"):
+        data = np.load("data" + "_"+str(dim)+"_"+str(n) + ".npy")
         ground_truth = data[0:k]
         np.random.shuffle(data)
         return ground_truth,data
@@ -31,7 +31,7 @@ def Data(k,dim,n):
         if(math.sqrt(radius_of_point)<radius):
             data_write[count] = point
             count+=1
-    np.save("data" + str(k)+".out", data_write)
+    np.save("data" + str(k)+"_"+str(dim)+"_"+str(n), data_write)
     ground_truth = data
     np.random.shuffle(data_write)
     return ground_truth,data_write
