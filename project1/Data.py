@@ -15,23 +15,27 @@ def Data(k,dim,n):
         return ground_truth,shuffled_data
     data = []
     data_write = np.zeros((n,dim))
-    radius = np.random.randint(0,10)
+    radius = np.random.randint(0,dim*10)
+    print("the radius",radius)
+    squared_radius = radius*radius
     rad = np.full(k,radius)
     rad = np.square(rad)
-    sum = np.zeros(k)
     count= k
-    for i in range(dim-1):
-        data.append(np.random.uniform(-10,10,(k)))
-        sum+=np.square(data[i])
-    last_col = rad-sum
-    last_col = np.sqrt(np.abs(last_col))
-    data.append(last_col)
-    data = np.array(data).T
+    i=0
+    while(i!=k):
+        point = np.random.uniform(-10 * dim, 10* dim, (dim-1))
+        sum = np.sum(np.square(point))
+        if(sum<=squared_radius):
+            last_col = math.sqrt(squared_radius-sum)
+            point = np.append(point,last_col)
+            data.append(point)
+            i=i+1
+    data=np.array(data)
     hull = Delaunay(data)
     for i in range(k):
         data_write[i] = data[i]
     while(count!=n):
-        point = np.random.uniform(-5,5,(dim))
+        point = np.random.uniform(-5*dim,5*dim,(dim))
         val = in_hull(point,hull)
         if(val):
             data_write[count] = point
