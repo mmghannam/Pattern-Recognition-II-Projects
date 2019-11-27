@@ -35,7 +35,7 @@ if __name__ == '__main__':
     dimension = [2,3,4]
     total_points= [100,500,1000]
     allError = []
-    X_orig = np.load('faceMatrix.npy').astype('float')
+    X_orig = np.load('Data/faceMatrix.npy').astype('float')
     size = X_orig.shape
     X = X_orig
     #Zero centered required
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         plt.clf()
     evaluate(total_points, allError, "convex_hull_strategy", "k values")
     allError.clear()
-
+    exit()
     ##Validation done with own data
     #For kmeans Strategy
     #For variation with k

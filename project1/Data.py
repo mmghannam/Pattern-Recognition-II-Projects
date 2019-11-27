@@ -8,8 +8,8 @@ def in_hull(p, hull):
     return hull.find_simplex(p)>=0
 
 def Data(k,dim,n):
-    if os.path.exists("data" + str(k)+"_"+str(dim)+"_"+str(n)+ ".npy"):
-        data = np.load("data" + str(k)+"_"+str(dim)+"_"+str(n) + ".npy")
+    if os.path.exists("Data/data" + str(k)+"_"+str(dim)+"_"+str(n)+ ".npy"):
+        data = np.load("Data/data" + str(k)+"_"+str(dim)+"_"+str(n) + ".npy")
         ground_truth = data[0:k]
         shuffled_data = np.random.permutation(data)
         return ground_truth,shuffled_data
@@ -40,7 +40,7 @@ def Data(k,dim,n):
         if(val):
             data_write[count] = point
             count+=1
-    np.save("data" + str(k)+"_"+str(dim)+"_"+str(n), data_write)
+    np.save("Data/data" + str(k)+"_"+str(dim)+"_"+str(n), data_write)
     ground_truth = data
     shuffled_data = np.random.permutation(data_write)
     return ground_truth,shuffled_data
