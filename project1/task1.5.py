@@ -9,62 +9,76 @@ import project1.strategy_convex_hull as ch
 from scipy.spatial import distance
 import datetime
 
-def evaluate(var,error,strategy,varname):
+
+def evaluate(var, error, strategy, varname):
     plt.title("Variation with " + varname + " with " + strategy)
     plt.xlabel(varname)
     plt.ylabel("Error")
-    plt.plot(var,error)
+    plt.plot(var, error)
     plt.savefig("Variation with " + varname + " with " + strategy + ".pdf",
                 papertype=None, format='pdf', transparent=False,
                 bbox_inches='tight', pad_inches=0.1)
     plt.clf()
 
-def plot_points(predictions,truth,k,n):
+
+def plot_points(predictions, truth, k, n):
     plt.title("Predicted Points vs the ground truth")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.scatter(predictions[:,0],predictions[:,1],marker = "o")
-    plt.scatter(truth[:,0],truth[:,1],marker="x")
-    plt.savefig("Plotted Points with " +str(k)+" and "+str(n)+" points.pdf",papertype=None, format='pdf', transparent=False,
+    plt.scatter(predictions[:, 0], predictions[:, 1], marker="o")
+    plt.scatter(truth[:, 0], truth[:, 1], marker="x")
+    plt.savefig("Plotted Points with " + str(k) + " and " + str(n) + " points.pdf", papertype=None, format='pdf',
+                transparent=False,
                 bbox_inches='tight', pad_inches=0.1)
     plt.clf()
 
+
 if __name__ == '__main__':
     data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
-    k_Values = [25,50,100]
-    dimension = [2,3,4]
-    total_points= [100,500,1000]
+    k_Values = [25, 50, 100]
+    dimension = [2, 3, 4]
+    total_points = [100, 500, 1000]
     allError = []
+
     X_orig = np.load('Data/faceMatrix.npy').astype('float')
     size = X_orig.shape
-    X = X_orig
-    #Zero centered required
-    #Normalizing the data
-    mean = np.mean(X_orig,axis=1)
+
+    X = X_orig.copy()
+
+    mean = np.mean(X_orig, axis=1)
     for i in range(size[1]):
-        X[:,i] = X_orig[:,i] - mean
+        X[:, i] = X_orig[:, i] - mean
+
     C = np.cov(X)
-    evals, U = np.linalg.eig(C)
-    H = U[:,0:6].T @ X
+    evals, U = np.linalg.eigh(C)
+    H = U[:, 0:6].T @ X
+
+    ##Validation done with face matrices
+
     Data_input = H.T
     for i in k_Values:
         prediction_indices = ch.strategy_convex_hull(Data_input, i)
-        output = np.zeros((361,i))
+        output = np.zeros((361, i))
         for j in range(i):
-            output[:,j] = X_orig[:,prediction_indices[j]]
-        sumPredictions = distance.cdist(output.T / 255, output.T / 255, 'cityblock').sum() / (25 * 25)
+            output[:, j] = X_orig[:, prediction_indices[j]]
+        sumPredictions = distance.cdist(output.T, output.T, 'cityblock').sum() / (255 * 25 * 25)
         allError.append(sumPredictions)
-        fig = plt.figure(figsize=(int(i/5),5))
         col = 5
-        row = int(i/5)
-        for j in range(0, col * row  ):
-            img = output[:,j].reshape(19,19)
-            fig.add_subplot(row, col, j+1)
-            plt.imshow(img)
-        plt.show()
-        plt.clf()
-    evaluate(total_points, allError, "convex_hull_strategy", "k values")
+        row = int(i / 5)
+        fig = plt.figure(figsize=(row, col))
+        for j in range(i):
+            img = output[:, j].reshape(19, 19)
+            fig.add_subplot(row, col, j + 1)
+            plt.axis('off')
+            plt.imshow(img, cmap='gray')
+        plt.savefig("Plotted Images with k: " + str(i) + " for Convex Hull Strategy.pdf", papertype=None,
+                    format='pdf',
+                    transparent=False,
+                    bbox_inches='tight', pad_inches=0.1)
+        # plt.show()
+    evaluate(k_Values, allError, "Convex Hull Strategy", "K values")
     allError.clear()
+
     for i in k_Values:
         predictions = sk.strategy_kmeans(X_orig.T, i)
         sumPredictions = distance.cdist(predictions / 255, predictions / 255, 'cityblock').sum() / (25 * 25)
@@ -75,59 +89,100 @@ if __name__ == '__main__':
         for j in range(0, col * row):
             img = predictions[j].reshape(19, 19)
             fig.add_subplot(row, col, j + 1)
-            plt.imshow(img)
-        plt.show()
-        plt.clf()
-    evaluate(total_points, allError, "convex_hull_strategy", "k values")
+            plt.axis('off')
+            plt.imshow(img, cmap='gray')
+        plt.savefig("Plotted Images with k: " + str(i) + " for K-means Strategy.pdf", papertype=None,
+                    format='pdf',
+                    transparent=False,
+                    bbox_inches='tight', pad_inches=0.1)
+        # plt.show()
+    evaluate(k_Values, allError, "K-means Strategy", "K values")
     allError.clear()
-    exit()
+
+    # exit()
     ##Validation done with own data
-    #For kmeans Strategy
-    #For variation with k
+    # For K-means
+
+    # for variation with k values
     for i in k_Values:
         truth, data = d.Data(k=i, dim=2, n=500)
         predictions = (sk.strategy_kmeans(data, i))
-        print(i)
         sumPredictions = distance_matrix(predictions, predictions).sum()
         sumTruth = distance_matrix(truth, truth).sum()
         error = sumTruth - sumPredictions
+        error /= sumTruth
         plot_points(predictions, truth, i, n=500)
         allError.append(error)
-    evaluate(k_Values, allError, "k_means_strategy", "k values")
+    evaluate(k_Values, allError, "K-means Strategy", "K values")
     allError.clear()
-    #For variation with dim
+
+    # for variation with dim
     for i in dimension:
-        truth, data = d.Data(k=25,dim=i,n=100)
-        predictions = (sk.strategy_kmeans(data,25))
+        truth, data = d.Data(k=25, dim=i, n=100)
+        predictions = (sk.strategy_kmeans(data, 25))
         sumPredictions = distance_matrix(predictions, predictions).sum()
         sumTruth = distance_matrix(truth, truth).sum()
         error = sumTruth - sumPredictions
-        if i==2:
+        error /= sumTruth
+        if i == 2:
             plot_points(predictions, truth, k=25, n=100)
         allError.append(error)
-    evaluate(dimension,allError,"kmeans_strategy","dimension values")
+    evaluate(dimension, allError, "K-means Strategy", "Dimension values")
     allError.clear()
-    #For variation with number of points:
+
+    # for variation with number of points:
     for i in total_points:
-        truth, data = d.Data(k=25,dim=2,n=i)
-        predictions = (sk.strategy_kmeans(data,25))
+        truth, data = d.Data(k=25, dim=2, n=i)
+        predictions = (sk.strategy_kmeans(data, 25))
         sumPredictions = distance_matrix(predictions, predictions).sum()
         sumTruth = distance_matrix(truth, truth).sum()
         plot_points(predictions, truth, 25, i)
         error = sumTruth - sumPredictions
+        error /= sumTruth
         allError.append(error)
-    evaluate(total_points,allError,"kmeans_strategy","number of points")
+    evaluate(total_points, allError, "K-means Strategy", "Number of Points")
     allError.clear()
 
-    #For convolution hull
+    # for Convex Hull
+
+    # for variation with k values
+    k_Values = [3, 4, 5]
+    for i in k_Values:
+        truth, data = dnew.Data(k=i, dim=2, n=100)
+        predictions = (ch.strategy_convex_hull(data, i))
+        sumPredictions = distance_matrix(predictions, predictions).sum()
+        sumTruth = distance_matrix(truth, truth).sum()
+        error = sumTruth - sumPredictions
+        error /= sumTruth
+        plot_points(predictions, truth, i, n=100)
+        allError.append(error)
+    evaluate(k_Values, allError, "Convex Hull Strategy", "K values")
+    allError.clear()
+
+    # for variation with dim
+    for i in dimension:
+        truth, data = dnew.Data(k=3, dim=i, n=100)
+        predictions = (ch.strategy_convex_hull(data, 3))
+        sumPredictions = distance_matrix(predictions, predictions).sum()
+        sumTruth = distance_matrix(truth, truth).sum()
+        error = sumTruth - sumPredictions
+        error /= sumTruth
+        if i == 2:
+            plot_points(predictions, truth, k=3, n=100)
+        allError.append(error)
+    evaluate(dimension, allError, "Convex Hull Strategy", "Dimension Values")
+    allError.clear()
+
+    # for variation with number of points:
 
     for i in total_points:
-        truth, data = dnew.Data(k=3,dim=2,n=i)
-        predictions = (ch.strategy_convex_hull(data,3))
+        truth, data = dnew.Data(k=3, dim=2, n=i)
+        predictions = (ch.strategy_convex_hull(data, 3))
         sumPredictions = distance_matrix(predictions, predictions).sum()
         sumTruth = distance_matrix(truth, truth).sum()
         plot_points(predictions, truth, 3, i)
         error = sumTruth - sumPredictions
+        error /= sumTruth
         allError.append(error)
-    evaluate(total_points,allError,"convex hull_strategy","number of points")
+    evaluate(total_points, allError, "Convex Hull Strategy", "Number of Points")
     allError.clear()
