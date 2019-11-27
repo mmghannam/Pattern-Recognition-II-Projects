@@ -6,8 +6,9 @@ from scipy.spatial import Delaunay
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
 
+
 def strategy_convex_hull(data, k=4, seed=1):
-    hull =ConvexHull(data)
+    hull = ConvexHull(data)
     solution = []
     vertices = hull.vertices
     while len(solution) + len(vertices) <= k:
@@ -25,8 +26,8 @@ def strategy_convex_hull(data, k=4, seed=1):
     temp_index = vertices[0]
     temp = data[temp_index]
     solution.append(temp_index)
-    vertices = vertices[vertices!=temp_index]
-    while(len(solution)<k):
+    vertices = vertices[vertices != temp_index]
+    while (len(solution) < k):
         max_distance = 0.0
         for j in vertices:
             suggested_distance = round(distance.euclidean(temp, data[j]))
@@ -35,13 +36,6 @@ def strategy_convex_hull(data, k=4, seed=1):
                 best_addition = j
         solution.append(best_addition)
         temp = data[best_addition]
-        vertices = vertices[vertices!=best_addition]
+        vertices = vertices[vertices != best_addition]
     return np.array(solution)
 
-
-
-
-
-
-if __name__ == '__main__':
-    print(strategy_convex_hull(data=np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]]), k=5))
