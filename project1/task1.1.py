@@ -2,6 +2,7 @@ from numpy import load, transpose, mean
 from numpy.linalg import eig, eigh, svd, norm
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import normalize
 
 
 def show_image(img_number, images_matrix, cmap='gray', size=(19, 19)):
@@ -15,18 +16,20 @@ def show_image(img_number, images_matrix, cmap='gray', size=(19, 19)):
 def plot_eigen_values(eig, eigh, sigma):
     number_of_values = len(eig)
     plt.subplot(3, 1, 1)
-    plt.title('eig eigne values')
+    plt.title('eig eigne values of C')
     plt.bar(range(number_of_values), eig)
 
     plt.subplot(3, 1, 2)
-    plt.title('eigh eigen values')
+    plt.title('eigh eigen values of C')
     plt.bar(range(number_of_values), eigh)
 
     plt.subplot(3, 1, 3)
-    plt.title('squared sigma values')
+    plt.title('squared singular values of X')
     plt.bar(range(number_of_values), map(lambda x: x ** 2, sigma))
     plt.tight_layout()
-    plt.show()
+
+    plt.savefig("Task 1-1")
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -37,7 +40,7 @@ if __name__ == '__main__':
     # for i in range(10): show_image(i, X)
 
     # make column mean = 0
-    X = X - mean(X, axis=0)
+    X = normalize(X - mean(X, axis=0), axis=0)
 
     C = X.dot(transpose(X))
 
