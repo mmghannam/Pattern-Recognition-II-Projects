@@ -6,19 +6,26 @@ import timeit
 import functools
 
 
+def eig_withC(X):
+    C = X.dot(transpose(X))
+    return eig(C)
+
+
+def eigh_withC(X):
+    C = X.dot(transpose(X))
+    return eigh(C)
+
+
 if __name__ == '__main__':
     # load data
-    X = load('faceMatrix.npy').astype('float')
-
-    # normalize X as to make column mean 0
-    C = X.dot(transpose(X))
+    X = load('Data/faceMatrix.npy').astype('float')
 
     # measuring the timing of eig(C)
-    ts = timeit.Timer(functools.partial(eig, C)).repeat(3, 100)
+    ts = timeit.Timer(functools.partial(eig_withC, X)).repeat(3, 100)
     print ("eig(C) took ", min(ts) / 100, " secs")
 
     # measuring the timing of eigh(C)
-    ts = timeit.Timer(functools.partial(eigh, C)).repeat(3, 100)
+    ts = timeit.Timer(functools.partial(eigh_withC, X)).repeat(3, 100)
     print ("eigh(C) took ", min(ts) / 100, " secs")
 
     # measuring the timing of eigh(C)

@@ -34,7 +34,7 @@ def plot_eigen_values(eig, eigh, sigma):
 
 if __name__ == '__main__':
     # load data
-    X = load('faceMatrix.npy').astype('float')
+    X = load('Data/faceMatrix.npy').astype('float')
 
     # show first 10 images
     # for i in range(10): show_image(i, X)

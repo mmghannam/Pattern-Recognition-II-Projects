@@ -25,7 +25,7 @@ def C_QR(C, count):
         return C
 
 
-X = np.load('faceMatrix.npy').astype('float')
+X = np.load('Data/faceMatrix.npy').astype('float')
 
 X = normalize(X - np.mean(X, axis=0), axis=0)
 

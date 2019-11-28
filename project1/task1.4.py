@@ -36,7 +36,7 @@ def group_show(full_data, group_size=(5,5) , cmap='gray', size=(19, 19)):
 
 if __name__ == '__main__':
     # load and show images
-    X = np.load('faceMatrix.npy').astype('float')
+    X = np.load('Data/faceMatrix.npy').astype('float')
     group_show(X, group_size=(5,5))
     # normalize and apply SVD
     X = normalize(X - np.mean(X, axis=0), axis=0)
