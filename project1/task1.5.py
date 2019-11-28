@@ -124,7 +124,7 @@ if __name__ == '__main__':
         error = sumTruth - sumPredictions
         error /= sumTruth
         if i == 2:
-            plot_points(predictions, truth, k=25, n=100)
+            plot_points(predictions, truth, k=i, n=100)
         allError.append(error)
     evaluate(dimension, allError, "K-means Strategy", "Dimension values")
     allError.clear()
@@ -150,8 +150,6 @@ if __name__ == '__main__':
         truth, data = dnew.Data(k=i, dim=2, n=100)
         predictions_indices = (ch.strategy_convex_hull(data, i))
         predictions = data[predictions_indices]
-        # for j in predictions_indices:
-        #     predictions[j,:] = data[j,:]
         sumPredictions = distance_matrix(predictions, predictions).sum()
         sumTruth = distance_matrix(truth, truth).sum()
         error = sumTruth - sumPredictions
