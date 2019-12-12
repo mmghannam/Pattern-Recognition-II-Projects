@@ -12,8 +12,11 @@ class Hopfield:
     def update(self):
         pass
 
-    def runSynchronous(self, synchronous=False):
+    def run(self, synchronous=False):
         pass
 
     def energy(self):
+        pass
+
+    def is_done(self):
         pass
