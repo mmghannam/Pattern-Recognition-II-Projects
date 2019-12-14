@@ -21,7 +21,7 @@ class kRooksHopfield(Hopfield):
         self.weight_matrix = weight_row + weight_columns
 
     def initialize_thresholds(self):
-        c = 2 * self.k - self.number_of_neurons
+        c = 2 - self.k
         ones = np.ones(self.number_of_neurons)
 
         threshold_rows = -2 * c * ones
@@ -30,28 +30,16 @@ class kRooksHopfield(Hopfield):
         self.thresholds = threshold_rows + threshold_columns
 
     def run(self, synchronous=False, convergence_params=[]):
-        for i in range(convergence_params[0]):
-            self.update(synchronous)
-            self.previous_energies.append(self.energy())
-            self.previous_states.append(self.state)
+        self.max_iteration = convergence_params[0]
+        super().run(synchronous, convergence_params)
 
+    def is_done(self, tolerance):
+        self.max_iteration -= 1
+        return self.max_iteration == 0
 
 
 if __name__ == '__main__':
     k = 3
     x = kRooksHopfield(k)
-    x.run(convergence_params=[100])
+    x.multiple_runs(n=5, convergence_params=[100])
     print(x)
-    y = np.array([[-0., - 2., - 2., - 2., - 0., - 0., - 2., - 0., - 0.],
-                  [-2., - 0., - 2., - 0., - 2., - 0., - 0., - 2., - 0.],
-                  [-2., - 2., - 0., - 0., - 0., - 2., - 0., - 0., - 2.],
-                  [-2., - 0., - 0., - 0., - 2., - 2., - 2., - 0., - 0.],
-                  [-0., - 2., - 0., - 2., - 0., - 2., - 0., - 2., - 0.],
-                  [-0., - 0., - 2., - 2., - 2., - 0., - 0., - 0., - 2.],
-                  [-2., - 0., - 0., - 2., - 0., - 0., - 0., - 2., - 2.],
-                  [-0., - 2., - 0., - 0., - 2., - 0., - 2., - 0., - 2.],
-                  [-0., - 0., - 2., - 0., - 0., - 2., - 2., - 2., - 0.]])
-    state = np.array([-1., - 1., - 1., - 1., - 1., - 1., - 1., - 1., - 1.])
-    for i in range(9):
-        print(y[i] @ state)
-    exit()
