@@ -2,13 +2,14 @@ import numpy as np
 
 
 class Hopfield:
-    def __init__(self, number_of_neurons, seed=100):
+    def __init__(self, number_of_neurons, seed=100, convergence_params=[]):
         np.random.seed(seed)
         self.number_of_neurons = number_of_neurons
         self.weight_matrix = self.initialize_weight_matrix()
         self.state = self.initialize_state()
         self.thresholds = self.initialize_thresholds()
         self.previous_energies = self.initialize_previous_energies()
+        self.convergence_params = convergence_params
 
     def initialize_previous_energies(self):
         return [np.NINF]
@@ -33,23 +34,23 @@ class Hopfield:
     def asynchronous_choice(self):
         return np.random.randint(self.number_of_neurons)
 
-    def run(self, criteria, synchronous=False):
-        while not self.is_done(criteria):
+    def run(self, synchronous=False):
+        while not self.is_done():
             self.update(synchronous)
+            self.previous_energies.append(self.energy())
 
     def energy(self):
         return -0.5 * self.state @ self.weight_matrix @ self.state + self.thresholds @ self.state
 
-    def is_done(self, criteria):
-        self.previous_energies.append(self.energy())
-        if np.isclose(self.previous_energies[-1], self.previous_energies[-2], rtol=criteria):
-            return True
-        return False
+    def is_done(self):
+        tolerance = self.convergence_params[0]
+        return self.previous_energies == [np.NINF] or \
+               np.isclose(self.previous_energies[-1], self.previous_energies[-2], rtol=tolerance)
 
-    def multiple_runs(self, n, criteria):
+    def multiple_runs(self, n):
         lowest_energies = [np.Inf]
         for i in range(n):
-            self.run(criteria)
+            self.run()
             if self.previous_energies[-1] < lowest_energies[-1]:
                 best_state = self.state.copy()
                 print(best_state)
@@ -65,5 +66,5 @@ class Hopfield:
 
 
 if __name__ == '__main__':
-    x = Hopfield(200)
-    x.multiple_runs(3, 0.1)
+    x = Hopfield(10, convergence_params=[0.1]) 
+    x.multiple_runs(3)
