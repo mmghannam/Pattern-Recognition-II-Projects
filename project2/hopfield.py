@@ -37,7 +37,7 @@ class Hopfield:
             self.state[self.state == 0] = 1
         else:
             i = self.asynchronous_choice()
-            self.state[i] = 1 if self.weight_matrix[i] @ self.state >= 0 else -1
+            self.state[i] = 1 if self.weight_matrix[i] @ self.state >= self.thresholds[i] else -1
 
     def asynchronous_choice(self):
         return np.random.randint(self.number_of_neurons)
