@@ -14,7 +14,7 @@ class Hopfield:
         return [np.NINF]
 
     def initialize_state(self):
-        return self.__get_random_polar_coordinate()
+        return self.__get_random_polar_state()
 
     def initialize_thresholds(self):
         return np.zeros(self.number_of_neurons)
