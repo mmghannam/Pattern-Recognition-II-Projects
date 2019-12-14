@@ -14,13 +14,12 @@ class Hopfield:
         return [np.NINF]
 
     def initialize_state(self):
-        return 2 * np.random.randint(2, size=self.number_of_neurons) - 1
+        return self.__get_random_polar_coordinate()
 
     def initialize_thresholds(self):
         return np.zeros(self.number_of_neurons)
 
     def initialize_weight_matrix(self):
-        # raise NotImplementedError
         return np.ones(2 * [self.number_of_neurons])
 
     def update(self, synchronous=False):
@@ -52,7 +51,6 @@ class Hopfield:
         for i in range(n):
             self.run(criteria)
             if self.previous_energies[-1] < lowest_energies[-1]:
-                print('here')
                 best_state = self.state.copy()
                 print(best_state)
                 lowest_energies = self.previous_energies.copy()
@@ -62,13 +60,10 @@ class Hopfield:
         self.previous_energies = lowest_energies
 
 
-# x = Hopfield(200)
-# print(x.multiple_runs(3,0.1))
-# print(x.state)
-# print(x.weight_matrix)
-# print(x.state)
-# print(x.run(0.1))
-# print(x.thresholds) [ 1 -1  1  1 -1 -1]
-# print(x.number_of_neurons)
-# x.update(synchronous=True)
-# print(x.state)
+    def __get_random_polar_state(self):
+        return 2 * np.random.randint(2, size=self.number_of_neurons) - 1
+
+
+if __name__ == '__main__':
+    x = Hopfield(200)
+    x.multiple_runs(3, 0.1)
