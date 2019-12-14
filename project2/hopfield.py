@@ -46,7 +46,7 @@ class Hopfield:
         while not self.is_done(*convergence_params):
             self.update(synchronous)
             self.previous_energies.append(self.energy())
-            self.previous_states.append(self.state)
+            self.previous_states.append(self.state.copy())
 
     def energy(self):
         return -0.5 * self.state @ self.weight_matrix @ self.state + self.thresholds @ self.state
