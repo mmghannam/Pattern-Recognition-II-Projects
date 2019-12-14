@@ -41,6 +41,7 @@ class Hopfield:
     def run(self, synchronous=False, convergence_params=[]):
         while not self.is_done(*convergence_params):
             self.update(synchronous)
+            self.previous_energies.append(self.energy())
 
     def energy(self):
         return -0.5 * self.state @ self.weight_matrix @ self.state + self.thresholds @ self.state
@@ -66,5 +67,7 @@ class Hopfield:
 
 
 if __name__ == '__main__':
-    x = Hopfield(5)
-    print(x.multiple_runs(3, convergence_params=[0.1]).state)
+    hf = Hopfield(5)
+    hf.multiple_runs(3, convergence_params=[0.1])
+    expected_state = [1, -1, 1, 1, 1]
+    assert all(x == y for (x, y) in zip(hf.state, expected_state)), "Behavior changed!"
