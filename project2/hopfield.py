@@ -69,5 +69,5 @@ class Hopfield:
 if __name__ == '__main__':
     hf = Hopfield(5)
     hf.multiple_runs(3, convergence_params=[0.1])
-    expected_state = [1, -1, 1, 1, 1]
-    assert all(x == y for (x, y) in zip(hf.state, expected_state)), "Behavior changed!"
+    expected_state = np.array([1, -1, 1, 1, 1])
+    assert np.array_equal(hf.state, expected_state), "Behavior changed!"
