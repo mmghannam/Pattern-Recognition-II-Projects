@@ -11,12 +11,16 @@ class Hopfield:
         self.initialize_state()
         self.initialize_thresholds()
         self.initialize_weight_matrix()
+        self.initialize_previous_states()
         self.initialize_previous_energies()
 
     reset = initialize  # alias for initialize method
 
     def initialize_previous_energies(self):
-        self.previous_energies = [np.NINF, self.energy()]
+        self.previous_energies = [np.Inf, self.energy()]
+
+    def initialize_previous_states(self):
+        self.previous_states = [None, self.state.copy()]
 
     def initialize_state(self):
         self.state = self.__get_random_polar_state()
@@ -42,6 +46,7 @@ class Hopfield:
         while not self.is_done(*convergence_params):
             self.update(synchronous)
             self.previous_energies.append(self.energy())
+            self.previous_states.append(self.state)
 
     def energy(self):
         return -0.5 * self.state @ self.weight_matrix @ self.state + self.thresholds @ self.state
@@ -54,16 +59,23 @@ class Hopfield:
         for _ in range(n):
             self.run(synchronous, convergence_params)
             if self.previous_energies[-1] < lowest_energies[-1]:
-                best_state = self.state.copy()
+                best_states = self.previous_states.copy()
                 lowest_energies = self.previous_energies.copy()
                 self.reset()
         self.previous_energies = lowest_energies
-        self.state = best_state
+        self.previous_states = best_states
+        self.state = self.previous_states[-1]
 
         return self
 
     def __get_random_polar_state(self):
         return 2 * np.random.randint(2, size=self.number_of_neurons) - 1
+
+    def __str__(self):
+        result = ['Hopfield Network Results\n', 50 * '#', '\n']
+        for state, energy in zip(self.previous_states, self.previous_energies):
+            result.append("state: {}, energy: {}\n".format(str(state), energy))
+        return ''.join(result)
 
 
 if __name__ == '__main__':
