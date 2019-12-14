@@ -1,5 +1,8 @@
+import functools
+
 from project2.hopfield import Hopfield
 import numpy as np
+import timeit
 
 
 class kRooksHopfield(Hopfield):
@@ -10,15 +13,36 @@ class kRooksHopfield(Hopfield):
     def initialize_weight_matrix(self):
         zeros = np.zeros([self.k, self.k])
         identity = np.eye(self.k)
-        j = np.ones([self.k, self.k]) - identity
+        J = np.ones([self.k, self.k]) - identity
 
-        weight_row = -2 * np.array(
-            [np.concatenate((np.tile(zeros, i), j, np.tile(zeros, self.k - i - 1)), axis=1)
-             for i in range(self.k)]).reshape(self.number_of_neurons, self.number_of_neurons)
-        weight_columns = -2 * np.array(
-            [np.concatenate((np.tile(identity, i), zeros, np.tile(identity, self.k - i - 1)), axis=1)
-             for i in range(self.k)]).reshape(self.number_of_neurons, self.number_of_neurons)
+        weight_row = self.compute_weight_rows(J, zeros)
+
+        weight_columns = self.compute_weight_columns(identity, zeros)
+
         self.weight_matrix = weight_row + weight_columns
+
+    def compute_weight_rows(self, J, zeros):
+        J_diagonal_matrix = []
+        for diagonal_index in range(self.k):
+            zeros_before_J = np.tile(zeros, diagonal_index)
+            zeros_after_J = np.tile(zeros, self.k - diagonal_index - 1)
+            column = np.concatenate((zeros_before_J, J, zeros_after_J), axis=1)
+            J_diagonal_matrix.append(column)
+        J_diagonal_matrix = np.array(J_diagonal_matrix).reshape(self.number_of_neurons, self.number_of_neurons)
+
+        return -2 * J_diagonal_matrix
+
+    def compute_weight_columns(self, identity, zeros):
+        complement_identity_matrix = []
+        for diagonal_index in range(self.k):
+            identities_before_zero = np.tile(identity, diagonal_index)
+            identities_after_zero = np.tile(identity, self.k - diagonal_index - 1)
+            column = np.concatenate((identities_before_zero, zeros, identities_after_zero), axis=1)
+            complement_identity_matrix.append(column)
+        complement_identity_matrix = np.array(complement_identity_matrix).reshape(self.number_of_neurons,
+                                                                                  self.number_of_neurons)
+
+        return -2 * complement_identity_matrix
 
     def initialize_thresholds(self):
         c = 2 - self.k
@@ -39,7 +63,7 @@ class kRooksHopfield(Hopfield):
 
 
 if __name__ == '__main__':
-    k = 3
-    x = kRooksHopfield(k)
-    x.multiple_runs(n=5, convergence_params=[100])
-    print(x)
+    for k in [4, 8]:
+        x = kRooksHopfield(k)
+        x.multiple_runs(n=5, convergence_params=[100])
+        print(x.state)
