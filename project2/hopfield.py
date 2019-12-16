@@ -61,7 +61,7 @@ class Hopfield:
             if self.previous_energies[-1] < lowest_energies[-1]:
                 best_states = self.previous_states.copy()
                 lowest_energies = self.previous_energies.copy()
-                self.reset()
+            self.reset()
         self.previous_energies = lowest_energies
         self.previous_states = best_states
         self.state = self.previous_states[-1]
@@ -73,8 +73,10 @@ class Hopfield:
 
     def __str__(self):
         result = ['Hopfield Network Results\n', 50 * '#', '\n']
+        i = 0
         for state, energy in zip(self.previous_states, self.previous_energies):
-            result.append("state: {}, energy: {}\n".format(str(state), energy))
+            result.append("iter: {}, state: {}, energy: {}\n".format(str(i), str(state), energy))
+            i += 1
         return ''.join(result)
 
 
