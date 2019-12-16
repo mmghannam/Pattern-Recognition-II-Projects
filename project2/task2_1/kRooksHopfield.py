@@ -54,16 +54,26 @@ class kRooksHopfield(Hopfield):
         self.thresholds = threshold_rows + threshold_columns
 
     def run(self, synchronous=False, convergence_params=[]):
-        self.max_iteration = convergence_params[0]
+        self.max_iterations = convergence_params[0]
+        self.iterations = 0
         super().run(synchronous, convergence_params)
 
     def is_done(self, tolerance):
-        self.max_iteration -= 1
-        return self.max_iteration == 0
+        self.iterations += 1
+        return self.max_iterations == self.iterations or self.solved()
+
+    def reshaped_state(self):
+        return self.state.reshape((self.k, self.k))
+
+    def solved(self):
+        reshaped_test = self.reshaped_state()
+        if np.all(np.sum(reshaped_test, 0) == 2 - self.k) and np.all(np.sum(reshaped_test, 1) == 2 - self.k):
+            return True
+        return False
 
 
 if __name__ == '__main__':
     for k in [4, 8]:
         x = kRooksHopfield(k)
         x.multiple_runs(n=5, convergence_params=[100])
-        print(x.state)
+        print(x.reshaped_state())
