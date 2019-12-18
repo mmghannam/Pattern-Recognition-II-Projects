@@ -6,7 +6,7 @@ import timeit
 
 
 class kRooksHopfield(Hopfield):
-    def __init__(self, k, seed=100):
+    def __init__(self, k, seed=None):
         self.k = k
         super().__init__(k * k, seed)
 
