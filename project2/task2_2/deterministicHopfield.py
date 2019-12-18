@@ -1,9 +1,10 @@
 from project2.task2_1.kRooksHopfield import kRooksHopfield
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def deterministic_behavior(Class):
-    def asynchronous_choice(self, depth=2):
+    def asynchronous_choice(self, depth=1):
         original_state = self.state.copy()
         _, neuron = self.energy_search(original_state, self.depth)
         if self.local_minimum_check():
@@ -36,7 +37,7 @@ def deterministic_behavior(Class):
 
     def run(self, depth=1, synchronous=False, convergence_params=[]):
         self.depth = depth
-        old_run(self, synchronous, convergence_params)
+        old_run(self, synchronous=synchronous, convergence_params=convergence_params)
 
     Class.asynchronous_choice = asynchronous_choice
     Class.energy_search = energy_search
@@ -55,18 +56,41 @@ def compare(k, n, criteria):
 
 
 if __name__ == '__main__':
-    k = 5
-    criteria = 100
-    n = 30
-    deterministic, non_deterministic = compare(k, n, criteria)
-    # print(deterministic, non_deterministic)
-    print("Deterministic iter: {}\n state:\n {}\n energy: {}, solved: {}\n".format(str(deterministic.iterations),
-                                                                                   str(deterministic.reshaped_state()),
-                                                                                   deterministic.previous_energies[-1],
-                                                                                   deterministic.solved()))
-    print("Deterministic iter: {}\n state:\n {}\n energy: {}, solved: {}\n".format(str(non_deterministic.iterations),
-                                                                                   str(
-                                                                                       non_deterministic.reshaped_state()),
-                                                                                   non_deterministic.previous_energies[
-                                                                                       -1],
-                                                                                   non_deterministic.solved()))
+
+    for k in [4, 8]:
+        ns = [1, 10, 100]
+        criterias = [10, 100, 1000]
+        fig, axes = plt.subplots(nrows=3, ncols=3)
+        fig.suptitle("K-Rooks K: " + str(k), fontsize=14)
+        fig.subplots_adjust(wspace=1.0, hspace=1.0)
+
+        i = -1
+        for n in ns:
+
+            for criteria in criterias:
+                x = kRooksHopfield(k)
+                deterministic_behavior(kRooksHopfield)
+
+                x.multiple_runs(n=n, convergence_params=[criteria])
+                print("K: {}\n iter: {}\n state:\n {}\n energy: {}, solved: {}\n".format(str(k), str(x.best_iterations),
+                                                                                         str(x.reshaped_state()),
+                                                                                         x.previous_energies[-1],
+                                                                                         x.solved()))
+
+                i += 1
+                col = i % 3
+                row = int(i / 3)
+                img = x.reshaped_state()
+                title = "R:" + str(n) + " I: " + str(x.best_iterations) + "/" + str(criteria) + ' G: ' + (
+                    'T' if x.solved() else 'F')
+                axes[row, col].matshow(img, cmap='gray')
+                axes[row, col].set_title(title, pad=20)
+
+        fig.subplots_adjust(top=0.85)
+        fig.set_size_inches(6, 6)
+        savtitle = "KRooks with K:" + str(k)
+        plt.savefig(savtitle + ".jpg",
+                    format='jpeg',
+                    transparent=False,
+                    bbox_inches='tight', pad_inches=0.01)
+        plt.close()
