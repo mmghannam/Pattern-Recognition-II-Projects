@@ -6,12 +6,11 @@ Created on Tue Dec 17 12:53:42 2019
 @author: shahnawaz
 """
 
-import functools
-
 from project2.hopfield import Hopfield
 import numpy as np
 import timeit
 from scipy import spatial
+import matplotlib.pyplot as plt
 
 class argmaxHopfield(Hopfield):
     def __init__(self, k, lda, X, m, seed=100):
@@ -22,14 +21,15 @@ class argmaxHopfield(Hopfield):
         super().__init__(m, seed)
 
     def initialize_weight_matrix(self):
-        self.weight_matrix = -0.5 * self.lda * (np.ones((self.m, self.m))-np.eye(self.m))
+        self.weight_matrix = -0.5 * ( self.lda* np.ones((self.m, self.m))  -((self.k+1)/self.k)*(self.X) - self.lda* np.eye(self.m))
+        pass
 
     def initialize_thresholds(self):
         c = 2*self.k - self.m
         ones = np.ones(self.number_of_neurons)
-        thres = -0.5 * (self.X + self.lda*c*ones)
+        thres = -0.25 * (np.matmul(self.X, ones) + 2.0*self.lda*c*ones)
 
-        self.thresholds = thres
+        self.thresholds = thres.T
 
     def run(self, synchronous=False, convergence_params=[]):
         self.max_iterations = convergence_params[0]
@@ -49,24 +49,44 @@ class argmaxHopfield(Hopfield):
 #            return True
 #        return False
 
+def group_show(full_data, group_size=(5,5) , cmap='gray', size=(19, 19)):
+    # plot multiple graysacale data together
+    fig = plt.figure(figsize=group_size) 
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1, hspace=0.05, wspace=0.05)
+    for i in range(group_size[0] * group_size[1]): 
+        ax = fig.add_subplot(group_size[0], group_size[1], i+1, xticks=[], yticks=[]) 
+        ax.imshow(full_data[:, i].reshape(size), cmap=cmap)
+    plt.show()
 
 if __name__ == '__main__':
     X = np.load('faceMatrix.npy').astype('float')
-    X = X[:,:100]
+    X = X[:,:100]/255
+#    X = np.array([[8,0,3,4,1,5,9,7,6,2]])
     V = spatial.distance.pdist(X.T, 'sqeuclidean')
     D_original = spatial.distance.squareform(V)
     D = np.tril(D_original, -1)
-    D = D.flatten() 
     
-    np.random.seed(10)
-#    D= np.random.randint(0, 50, (20))
-    D = np.array([8,0,3,4,1,5,9,7,6,2])
     states = []
-#    for k in [5, 10, 25]:
-    for k in [1, 2, 3]:
-        hopfld = argmaxHopfield(k, 10, D.T, len(D))
-        hopfld.multiple_runs(n=1, convergence_params=[1])
+    K = [2, 10, 25]
+    for k in K:
+        hopfld = argmaxHopfield(k, 2, D, np.shape(D)[0])
+        hopfld.multiple_runs(n=10, convergence_params=[1000])
         st = hopfld._state()
         states.append(hopfld._state())
-        
+        print(hopfld.__str__())
+        pass
+    
+    i = 0
+    for state in states:
+        print(str(K[i]) + "images which are farthest")
+        images = np.zeros((361,0))
+        for j in range(len(state)):
+            if state[j]>0:
+                img = np.expand_dims(X[:,j],1)
+                images = np.concatenate((images, img), axis=1)
+            pass
+        group_show(images,(1,K[i]))
+        i = i + 1
+    
+    
     print("Done")
