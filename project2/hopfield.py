@@ -2,8 +2,8 @@ import numpy as np
 
 
 class Hopfield:
-    def __init__(self, number_of_neurons, seed=100):
-        np.random.seed(seed)
+    def __init__(self, number_of_neurons, seed=None):
+        if seed: np.random.seed(seed)
         self.number_of_neurons = number_of_neurons
         self.initialize()
 
@@ -81,7 +81,8 @@ class Hopfield:
 
 
 if __name__ == '__main__':
-    hf = Hopfield(5)
+    seed = 100
+    hf = Hopfield(5, seed=100)
     hf.multiple_runs(3, convergence_params=[0.1])
     expected_state = [1, -1, 1, 1, 1]
     assert all(x == y for (x, y) in zip(hf.state, expected_state)), "Behavior changed!"
