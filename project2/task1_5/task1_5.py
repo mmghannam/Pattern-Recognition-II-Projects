@@ -67,7 +67,7 @@ if __name__ == '__main__':
     D = np.tril(D_original, -1)
     
     states = []
-    K = [2, 10, 25]
+    K = [5, 10, 25]
     for k in K:
         hopfld = argmaxHopfield(k, 2, D, np.shape(D)[0])
         hopfld.multiple_runs(n=10, convergence_params=[1000])
