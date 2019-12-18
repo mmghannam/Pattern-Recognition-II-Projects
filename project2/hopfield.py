@@ -57,7 +57,7 @@ class Hopfield:
     def multiple_runs(self, n, synchronous=False, convergence_params=[]):
         lowest_energies = [np.Inf]
         for _ in range(n):
-            self.run(synchronous, convergence_params)
+            self.run(synchronous=synchronous, convergence_params=convergence_params)
             if self.previous_energies[-1] < lowest_energies[-1]:
                 best_states = self.previous_states.copy()
                 lowest_energies = self.previous_energies.copy()
