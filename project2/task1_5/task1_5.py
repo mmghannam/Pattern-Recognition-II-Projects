@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 
 class argmaxHopfield(Hopfield):
-    def __init__(self, k, lda, X, m, seed=100):
+    def __init__(self, k, lda, X, m, seed=None):
         self.m = m
         self.k = k
         self.lda = lda

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 class kRooksHopfield(Hopfield):
-    def __init__(self, k, seed=100):
+    def __init__(self, k, seed=None):
         self.k = k
         self.best_iterations = np.Inf
         super().__init__(k * k, seed)
