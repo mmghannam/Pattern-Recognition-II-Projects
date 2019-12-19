@@ -94,10 +94,28 @@ if __name__ == '__main__':
         images = np.zeros((361, 0))
         for j in range(len(state)):
             if state[j] > 0:
+                print(j)
                 img = np.expand_dims(X[:, j], 1)
                 images = np.concatenate((images, img), axis=1)
             pass
         group_show(images, (1, K[i]))
+        i = i + 1
+    i = 0
+    for state in states:
+        print(str(K[i]) + "images which are farthest")
+        images = np.zeros((361, 0))
+        for j in range(len(state)):
+            if state[j] > 0:
+                print(j)
+                img = np.expand_dims(X[:, j], 1)
+                img = img.reshape((19,19))
+                fig, ax = plt.subplots()
+                
+                plt.imshow(img, cmap='gray')
+                plt.show()
+                #images = np.concatenate((images, img), axis=1)
+            pass
+        #group_show(images, (1, K[i]))
         i = i + 1
 
     print("Done")
